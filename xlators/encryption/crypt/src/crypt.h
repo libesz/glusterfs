@@ -35,6 +35,20 @@
 #define MASTER_VOL_KEY_SIZE (32)
 #define NMTD_VOL_KEY_SIZE (16)
 
+#define CRYPT_STACK_UNWIND(fop, frame, params ...)		\
+	do {							\
+		crypt_local_t *__local = NULL;			\
+		if (frame) {					\
+			if (frame->local) {			\
+				__local = frame->local;		\
+				GF_FREE (__local);		\
+			}					\
+		}						\
+		STACK_UNWIND_STRICT (fop,			\
+				     frame,			\
+				     params);			\
+	} while (0)
+
 #if !defined(GF_LINUX_HOST_OS)
 typedef off_t loff_t;
 #endif
